@@ -1,0 +1,81 @@
+https://www.instagram.com/graphql/query/?query_hash=90709b530ea0969f002c86a89b4f2b8d&variables=%7B%22reel_ids%22%3A%5B%5D%2C%22tag_names%22%3A%5B%5D%2C%22location_ids%22%3A%5B%5D%2C%22highlight_reel_ids%22%3A%5B%2218030541540253039%22%2C%2217844565798291695%22%2C%2217952651904196313%22%5D%2C%22precomposed_overlay%22%3Afalse%2C%22show_story_viewer_list%22%3Atrue%2C%22story_viewer_fetch_count%22%3A50%2C%22story_viewer_cursor%22%3A%22%22%2C%22stories_video_dash_manifest%22%3Afalse%7D
+
+https://www.instagram.com/data/shared_data/
+
+https://instagram.com/api/v1/feed/timeline/?min_id=
+
+-- instagram api resource
+followURL = "https://i.instagram.com/api/v1/friendships/create/{}/"
+unfollowURL = "https://i.instagram.com/api/v1/friendships/destroy/{}/" 
+loginURL = "https://i.instagram.com/api/v1/accounts/login/"
+followerListURL = "https://i.instagram.com/api/v1/friendships/{}/followers/"
+followingListURL = "https://i.instagram.com/api/v1/friendships/{}/following/"
+userMediaURL = "https://i.instagram.com/api/v1/feed/user/{}/"
+userInfoURL = "https://i.instagram.com/api/v1/users/{}/info/"
+
+instagram feed : https://i.instagram.com/api/v1/feed/reels_tray/
+
+$userfeed = 'https://i.instagram.com/api/v1/feed/user/'.$userid.'/reel_media/';
+
+
+search hastag
+
+https://www.instagram.com/web/search/topsearch/?context=blended&query=%23aurora&rank_token=0.025324913114339598&include_reel=true
+
+https://www.instagram.com/explore/tags/niuxinxin/?__a=1
+
+https://www.instagram.com/graphql/query/?query_hash=12ae035b8131ec43c0a0a2ec7088c777&variables=%7B%22tag_name%22%3A%22niuxinxin%22%2C%22include_reel%22%3Atrue%2C%22include_logged_out%22%3Afalse%7D
+
+follow tags
+
+https://www.instagram.com/web/tags/follow/niuxinxin/
+https://www.instagram.com/web/tags/unfollow/niuxinxin/
+
+https://www.instagram.com/graphql/query/?query_hash=2418469a2b4d9b47ae7bec08e3ec53ad&variables=%7B%22shortcode%22%3A%22BxAy6KOFrpz%22%2C%22child_comment_count%22%3A3%2C%22fetch_comment_count%22%3A40%2C%22parent_comment_count%22%3A24%2C%22has_threaded_comments%22%3Atrue%7D
+
+## ----- >search tags
+
+$useragent = 'Instagram 133.0.0 (iPad4; iPhone OS 13_3_1; en_RO; en-RO; scale=2.00; gamut=normal; 640x960) AppleWebKit/420+';
+
+https://www.instagram.com/explore/tags/{$hashtag}/?__a=1
+
+CURLOPT_POSTFIELDS     => [
+
+'hastag'      => $hashtag
+
+],
+
+feed/tag/{$urlHashtag}/
+
+public function getFeedGraph(
+$hashtag,
+$next_page = 12,
+$end_cursor = null)
+{
+Utils::throwIfInvalidHashtag($hashtag);
+
+return $request = $this->ig->request("graphql/query/")
+->setVersion(5)
+->setSignedPost(false)
+->addParam('query_hash', 'bd33792e9f52a56ae8fa0985521d141d')
+->addParam('variables', json_encode([
+"tag_name" => $hashtag,
+"first" => $next_page,
+"after" => $end_cursor,
+]))
+->getResponse(new Response\GraphqlResponse());
+}
+
+## ----- > highlight
+
+    public function getUserFeed(
+        $userId)
+    {
+        return $this->ig->request("highlights/{$userId}/highlights_tray/")
+            ->addParam('supported_capabilities_new', json_encode(Constants::SUPPORTED_CAPABILITIES))
+            ->addParam('phone_id', $this->ig->phone_id)
+            ->addParam('battery_level', '100')
+            ->addParam('is_charging', '1')
+            ->addParam('will_sound_on', '1')
+            ->getResponse(new Response\HighlightFeedResponse());
+    }
